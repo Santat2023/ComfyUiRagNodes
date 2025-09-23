@@ -10,8 +10,8 @@ import node_helpers
 from PIL import Image, ImageOps, ImageSequence
 import numpy as np
 import io
-from . import s3_example
-from . import load_images
+from . import s3_utils
+from . import load_images_utils
 from .llm_node import LLM_Node
 from .db_load_node import DB_Load_Node
 
@@ -70,7 +70,7 @@ class RAG_KSampler_Node:
 
     def sample(self, user_initial_prompt, vae, clip, model, seed, steps, cfg, sampler_name, scheduler, negative, latent_image, denoise=1.0):
         #file_bytes = s3_example.load_image_bytes_from_s3("5ae7e75f-abd5-41c8-8180-5282d776b2f7_ChatGPT Image 8. Sept. 2025, 21_32_04.png")
-        file_bytes = load_images.find_image_by_prompt(user_initial_prompt)
+        file_bytes = load_images_utils.find_image_by_prompt(user_initial_prompt)
         print("Loaded image bytes from S3, size:", len(file_bytes))
         image = self.load_image(file_bytes)
         print("Created image")
@@ -86,7 +86,6 @@ class RAG_KSampler_Node:
     
     def load_image(self, file_bytes):
         #image_path = folder_paths.get_annotated_filepath(image)
-        
         img = node_helpers.pillow(Image.open, io.BytesIO(file_bytes))
         
         output_images = []
@@ -127,6 +126,7 @@ class RAG_KSampler_Node:
         return output_image
 
     def call_llm(self, user_initial_prompt, clip):
+        # TODO тут копи паста из llm_node.py вынести в отдельный общий метод
         # Запрос к локальному Ollama
         try:
             print("start sending to LLM")
@@ -149,9 +149,9 @@ class RAG_KSampler_Node:
                     """,
                     "stream": False
                 },
-                timeout=240  # ждём до 4 минут
+                timeout=240  # 4 минуты
             )
-            # Логируем полный ответ сервера
+            # Логирование ответа сервера
             print("[LLM_Node] RAW RESPONSE:", response.text)
 
             if response.status_code == 200:
@@ -172,16 +172,3 @@ class RAG_KSampler_Node:
 
         tokens = clip.tokenize(result_text)
         return clip.encode_from_tokens_scheduled(tokens)
-    
-NODE_CLASS_MAPPINGS = {
-    "MyNodesForRAG": RAG_KSampler_Node,
-    "MyNodesForLLM": LLM_Node,
-    "MyNodesForDB": DB_Load_Node
-}
-
-# A dictionary that contains the friendly/humanly readable titles for the nodes
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "MyNodesForRAG": "RAG KSampler Node",
-    "MyNodesForLLM": "LLM Node",
-    "MyNodesForDB": "DB Load Node"
-}

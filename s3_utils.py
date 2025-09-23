@@ -66,24 +66,3 @@ def create_bucket(bucket_name: str):
     except:
         s3.create_bucket(Bucket=bucket_name)
         print(f"🪣 Бакет '{bucket_name}' создан")
-
-
-"""if __name__ == "__main__":
-    # Убедимся, что bucket существует
-    try:
-        s3.head_bucket(Bucket=BUCKET_NAME)
-    except:
-        s3.create_bucket(Bucket=BUCKET_NAME)
-        print(f"🪣 Bucket '{BUCKET_NAME}' создан")
-
-    # Пути
-    #local_upload = "fox.jpg"
-    local_upload = r"F:\MyProjects\Diploma\ChromaDb\fox.jpg"
-    object_name = "animals/fox.jpg"
-    local_download = "fox_downloaded.jpg"
-
-    # Загружаем
-    upload_image(local_upload, object_name)
-
-    # Скачиваем обратно
-    download_image(object_name, local_download)"""

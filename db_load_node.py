@@ -1,6 +1,6 @@
-from . import load_images
+from . import load_images_utils
 import chromadb
-from . import s3_example
+from . import s3_utils
 import torch
 import node_helpers
 from PIL import Image, ImageOps, ImageSequence
@@ -12,7 +12,7 @@ S3_BUCKET = "images"
 S3_ACCESS_KEY = "admin"
 S3_SECRET_KEY = "admin123"
 
-    # --- подключение к Chroma и S3
+# --- подключение к Chroma и S3
 client = chromadb.HttpClient(host="localhost", port=8000)
 
 class DB_Load_Node:
@@ -47,8 +47,7 @@ class DB_Load_Node:
 
 
     def load_from_db(self, user_initial_prompt, collection_to_select):
-        # TODO call vector db logic here
-        file_bytes = load_images.find_image_by_prompt(user_initial_prompt, collection_to_select)
+        file_bytes = load_images_utils.find_image_by_prompt(user_initial_prompt, collection_to_select)
         image = self.load_image(file_bytes)
         return (image, )
     
@@ -57,7 +56,6 @@ class DB_Load_Node:
     
     def load_image(self, file_bytes):
         #image_path = folder_paths.get_annotated_filepath(image)
-        
         img = node_helpers.pillow(Image.open, io.BytesIO(file_bytes))
         
         output_images = []
@@ -96,14 +94,3 @@ class DB_Load_Node:
             output_image = output_images[0]
 
         return output_image
-
-"""
-NODE_CLASS_MAPPINGS = {
-    "MyNodesForDB": DB_Load_Node
-}
-
-# A dictionary that contains the friendly/humanly readable titles for the nodes
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "MyNodesForDB": "DB Load Node"
-}
-"""

@@ -51,7 +51,7 @@ class LLM_Node:
                 },
                 timeout=240  # ждём до 4 минут
             )
-            # Логируем полный ответ сервера
+            # Логирование ответа сервера
             print("[LLM_Node] RAW RESPONSE:", response.text)
 
             if response.status_code == 200:
@@ -72,14 +72,3 @@ class LLM_Node:
 
         tokens = clip.tokenize(result_text)
         return (clip.encode_from_tokens_scheduled(tokens),)
-
-# A dictionary that contains all nodes you want to export with their names
-# NOTE: names should be globally unique
-"""NODE_CLASS_MAPPINGS = {
-    "MyNodesForLLM": LLM_Node
-}
-
-# A dictionary that contains the friendly/humanly readable titles for the nodes
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "MyNodesForLLM": "LLM Node"
-}"""
