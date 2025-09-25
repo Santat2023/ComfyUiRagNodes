@@ -7,11 +7,6 @@ from PIL import Image, ImageOps, ImageSequence
 import numpy as np
 import io
 
-S3_ENDPOINT = "http://localhost:9000"
-S3_BUCKET = "images"
-S3_ACCESS_KEY = "admin"
-S3_SECRET_KEY = "admin123"
-
 # --- подключение к Chroma и S3
 client = chromadb.HttpClient(host="localhost", port=8000)
 

@@ -5,8 +5,8 @@ import io
 
 # Конфигурация MinIO
 MINIO_ENDPOINT = "http://localhost:9000"
-ACCESS_KEY = "admin"
-SECRET_KEY = "admin123"
+ACCESS_KEY = "minioadmin"
+SECRET_KEY = "minioadmin"
 BUCKET_NAME = "images"
 
 # Создаём клиент
