@@ -34,7 +34,7 @@ class LLM_Node:
             response = requests.post(
                 "http://localhost:11434/api/generate",
                 json={
-                    "model": "llama3:8b",  
+                    "model": "qwen2:7b",  
                     "prompt": f"""
                     You are an assistant for Stable Diffusion. 
                     Rewrite the request into an expanded clean prompt. 
