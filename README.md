@@ -48,3 +48,9 @@ ollama pull qwen2:7b
 
 Добавьте ноды через интерфейс ComfyUI и настройте параметры согласно вашим задачам.
 
+
+## Примеры
+
+В папке testFlows содержатся примеры применения кастомных pipelines.
+Для их корректной работы необходимо установить дополнительный репозиторий:
+[ComfyUI_IPAdapter_plus](https://github.com/cubiq/ComfyUI_IPAdapter_plus) 
