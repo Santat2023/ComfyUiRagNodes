@@ -1,5 +1,4 @@
 from . import load_images_utils
-import chromadb
 from . import s3_utils
 import torch
 import node_helpers
@@ -7,8 +6,10 @@ from PIL import Image, ImageOps, ImageSequence
 import numpy as np
 import io
 
-# --- подключение к Chroma и S3
-client = chromadb.HttpClient(host="localhost", port=8000)
+from qdrant_client import QdrantClient
+
+# --- подключение к Qdrant и S3
+client = QdrantClient(host="localhost", port=6333)
 
 class DB_Load_Node:
 
@@ -18,9 +19,9 @@ class DB_Load_Node:
     @classmethod
     def INPUT_TYPES(s):
         try:
-            collections = [c.name for c in client.list_collections()]
+            collections = [c.name for c in client.get_collections().collections]
         except Exception as e:
-            print(f"⚠️ Ошибка получения коллекций: {e}")
+            print(f"⚠️ Ошибка получения коллекций из Qdrant: {e}")
             collections = ["no_collections_found"]
 
         return {
@@ -40,17 +41,19 @@ class DB_Load_Node:
 
     CATEGORY = "MyNodes"
 
-
     def load_from_db(self, user_initial_prompt, collection_to_select):
         file_bytes = load_images_utils.find_image_by_prompt(user_initial_prompt, collection_to_select)
         image = self.load_image(file_bytes)
         return (image, )
     
     def list_collections(self):
-        return [c.name for c in client.list_collections()]
-    
+        try:
+            return [c.name for c in client.get_collections().collections]
+        except Exception as e:
+            print(f"⚠️ Ошибка получения коллекций: {e}")
+            return []
+
     def load_image(self, file_bytes):
-        #image_path = folder_paths.get_annotated_filepath(image)
         img = node_helpers.pillow(Image.open, io.BytesIO(file_bytes))
         
         output_images = []

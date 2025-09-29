@@ -3,7 +3,7 @@
 Этот пакет содержит кастомные ноды для [ComfyUI](https://github.com/comfyanonymous/ComfyUI):
 
 - Генерация изображений с помощью Stable Diffusion и LLM
-- Загрузка и поиск изображений через ChromaDB и MinIO (S3)
+- Загрузка и поиск изображений через Qdrant и MinIO (S3)
 - Интеграция с CLIP, Ollama, и другими инструментами
 
 ## Структура
@@ -23,7 +23,7 @@
 - Python 3.10+
 - ComfyUI
 - MinIO/S3
-- ChromaDB
+- Qdrant
 - Ollama
 
 ## Поддержка Ollama
