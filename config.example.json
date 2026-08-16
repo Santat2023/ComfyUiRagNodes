@@ -1,0 +1,19 @@
+{
+    "llm": {
+        "provider": "Ollama",
+        "ollama": {
+            "base_url": "http://localhost:11434",
+            "model": "qwen2:7b"
+        },
+        "openai": {
+            "base_url": "https://api.openai.com/v1",
+            "api_key": "",
+            "model": "gpt-5-mini"
+        },
+        "yandex": {
+            "base_url": "https://ai.api.cloud.yandex.net/v1",
+            "api_key": "",
+            "model": ""
+        }
+    }
+}
