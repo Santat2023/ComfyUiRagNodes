@@ -4,6 +4,7 @@ from ..repositories.s3_repo import S3Repository
 from ..models.clip_model import ClipModel
 
 import node_helpers
+
 from PIL import Image, ImageOps, ImageSequence
 
 import numpy as np
@@ -30,26 +31,33 @@ class DB_Load_Node:
     def INPUT_TYPES(cls):
 
         try:
+
             repo = QdrantRepository()
+
             collections = repo.list_collections()
 
             if not collections:
-                collections = ["empty_collection"]
+                collections = [
+                    "empty_collection"
+                ]
 
         except Exception as e:
 
             print(
-                f"⚠️ Ошибка получения коллекций "
+                "⚠️ Ошибка получения коллекций "
                 f"из Qdrant: {e}"
             )
 
-            collections = ["no_collections_found"]
+            collections = [
+                "no_collections_found"
+            ]
 
         return {
             "required": {
 
-                # Эти два STRING предназначены
-                # для подключения выходов LLM_Node
+                # -----------------------------------------
+                # POSE
+                # -----------------------------------------
 
                 "pose_query": (
                     "STRING",
@@ -62,6 +70,10 @@ class DB_Load_Node:
                     collections,
                 ),
 
+                # -----------------------------------------
+                # STYLE
+                # -----------------------------------------
+
                 "style_query": (
                     "STRING",
                     {
@@ -71,6 +83,30 @@ class DB_Load_Node:
 
                 "style_collection": (
                     collections,
+                ),
+
+                # -----------------------------------------
+                # SEARCH WEIGHTS
+                # -----------------------------------------
+
+                "auto_weight": (
+                    "FLOAT",
+                    {
+                        "default": 0.3,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.05
+                    }
+                ),
+
+                "manual_weight": (
+                    "FLOAT",
+                    {
+                        "default": 0.7,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.05
+                    }
                 ),
             }
         }
@@ -94,28 +130,35 @@ class DB_Load_Node:
         pose_query,
         pose_collection,
         style_query,
-        style_collection
+        style_collection,
+        auto_weight,
+        manual_weight
     ):
 
         print(
-            "[DB_Load_Node] Pose query:",
-            pose_query
+            "[DB_Load_Node] "
+            f"Auto weight: {auto_weight}"
         )
 
         print(
-            "[DB_Load_Node] Style query:",
-            style_query
+            "[DB_Load_Node] "
+            f"Manual weight: {manual_weight}"
         )
 
         # -----------------------------------------
         # POSE
         # -----------------------------------------
 
-        pose_file_bytes = (
-            self.service.find_image(
-                pose_query,
-                pose_collection
-            )
+        print(
+            "[DB_Load_Node] "
+            f"Pose query: {pose_query}"
+        )
+
+        pose_file_bytes = self.service.find_image(
+            query=pose_query,
+            collection=pose_collection,
+            auto_weight=auto_weight,
+            manual_weight=manual_weight
         )
 
         pose_image = self.load_image(
@@ -126,11 +169,16 @@ class DB_Load_Node:
         # STYLE
         # -----------------------------------------
 
-        style_file_bytes = (
-            self.service.find_image(
-                style_query,
-                style_collection
-            )
+        print(
+            "[DB_Load_Node] "
+            f"Style query: {style_query}"
+        )
+
+        style_file_bytes = self.service.find_image(
+            query=style_query,
+            collection=style_collection,
+            auto_weight=auto_weight,
+            manual_weight=manual_weight
         )
 
         style_image = self.load_image(
@@ -202,6 +250,7 @@ class DB_Load_Node:
                 )
 
             output_images.append(image)
+
             output_masks.append(
                 mask.unsqueeze(0)
             )
@@ -213,6 +262,7 @@ class DB_Load_Node:
             )
 
         if len(output_images) > 1:
+
             return torch.cat(
                 output_images,
                 dim=0
