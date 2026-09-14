@@ -596,6 +596,15 @@ ComfyUI/
 
 ---
 
+## Не хватает зависимостей в ComfyUI
+
+в файле requirements.txt описаны необходимые зависимости для работы нод.
+Для portable-версии ComfyUI лучше использовать именно Python из portable-дистрибутива:
+```text
+..\..\..\python_embeded\python.exe -m pip install -r requirements.txt
+```
+---
+
 ## Qdrant недоступен
 
 Проверьте, что Qdrant запущен и доступен по адресу:
